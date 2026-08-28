@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SENTINEL — Anonymous Report</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">🛡 SENTINEL</div>
+    <h1>Share a concern — completely anonymous</h1>
+    <p class="muted">No login. No name. No IP address is stored.</p>
+
+    {% if submitted %}
+      <div class="confirm">Thank you. Your report has been received and will be reviewed.</div>
+    {% endif %}
+
+    <form action="/submit" method="post">
+      <label>What have you noticed?</label>
+      <textarea name="concern" rows="5" placeholder="Describe what you've noticed, as much or as little as you're comfortable sharing..." required></textarea>
+
+      <div class="row">
+        <div>
+          <label>Hostel block (optional)</label>
+          <select name="hostel_block">
+            <option value="unspecified">Prefer not to say</option>
+            <option value="A">Block A</option>
+            <option value="B">Block B</option>
+            <option value="C">Block C</option>
+            <option value="D">Block D</option>
+          </select>
+        </div>
+        <div>
+          <label>Time of day (optional)</label>
+          <select name="time_slot">
+            <option value="unspecified">Prefer not to say</option>
+            <option value="morning">Morning</option>
+            <option value="afternoon">Afternoon</option>
+            <option value="evening">Evening</option>
+            <option value="night">Night</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit">Submit anonymously</button>
+    </form>
+
+    <a class="link" href="/helplines">Need help right now? See helplines →</a>
+    <a class="link" href="/dashboard">Counsellor dashboard →</a>
+  </div>
+</body>
+</html>

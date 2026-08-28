@@ -1,0 +1,17 @@
+[
+  {"word": "drugs", "weight": 3, "category": "substance"},
+  {"word": "weed", "weight": 2, "category": "substance"},
+  {"word": "alcohol", "weight": 1, "category": "substance"},
+  {"word": "pills", "weight": 3, "category": "substance"},
+  {"word": "addiction", "weight": 4, "category": "substance"},
+  {"word": "addicted", "weight": 4, "category": "substance"},
+  {"word": "relapse", "weight": 4, "category": "substance"},
+  {"word": "overdose", "weight": 5, "category": "distress"},
+  {"word": "suicidal", "weight": 5, "category": "distress"},
+  {"word": "hopeless", "weight": 3, "category": "distress"},
+  {"word": "scared", "weight": 2, "category": "distress"},
+  {"word": "help", "weight": 2, "category": "distress"},
+  {"word": "dealer", "weight": 4, "category": "distribution"},
+  {"word": "selling", "weight": 4, "category": "distribution"},
+  {"word": "supplier", "weight": 4, "category": "distribution"}
+]

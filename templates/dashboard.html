@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SENTINEL — Dashboard</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="wrap wide">
+    <div class="brand">🛡 SENTINEL</div>
+    <h1>Counsellor Dashboard</h1>
+    <p class="muted">Aggregate view only — no identity is ever linked to a report.</p>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <h3>Reports by block</h3>
+        {% for row in by_block %}
+          <div class="bar-row">
+            <span class="bar-label">{{ row["hostel_block"] }}</span>
+            <div class="bar" style="width: {{ (row['n'] * 24) }}px;"></div>
+            <span class="bar-count">{{ row["n"] }}</span>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="stat-card">
+        <h3>Reports by category</h3>
+        {% for row in by_category %}
+          <div class="bar-row">
+            <span class="bar-label">{{ row["category"] }}</span>
+            <div class="bar accent" style="width: {{ (row['n'] * 24) }}px;"></div>
+            <span class="bar-count">{{ row["n"] }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <table>
+      <tr>
+        <th>Risk Score</th>
+        <th>Category</th>
+        <th>Block</th>
+        <th>Time</th>
+        <th>Submitted</th>
+      </tr>
+      {% for r in reports %}
+      <tr class="{{ 'high-risk' if r['risk_score'] >= 6 else '' }}">
+        <td>{{ r["risk_score"] }}</td>
+        <td>{{ r["category"] }}</td>
+        <td>{{ r["hostel_block"] }}</td>
+        <td>{{ r["time_slot"] }}</td>
+        <td>{{ r["created_at"] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <a class="link" href="/">← Back to report form</a>
+  </div>
+</body>
+</html>
