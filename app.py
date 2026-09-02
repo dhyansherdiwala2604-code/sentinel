@@ -1,12 +1,27 @@
-from flask import Flask, render_template, request
+import os
+from functools import wraps
+
+from flask import Flask, render_template, request, redirect, url_for, session
 
 from database import init_db, insert_report, get_all_reports, get_stats
 from trie_engine import build_trie_from_json, load_phrases, scan_phrases
 from risk_engine import compute_risk_score, dominant_category
 
 app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-change-me")
+DASHBOARD_PASSWORD = os.environ.get("DASHBOARD_PASSWORD", "sentinel2026")
+
 trie = build_trie_from_json()
 phrases = load_phrases()
+
+
+def counsellor_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        if not session.get("is_counsellor"):
+            return redirect(url_for("dashboard_login"))
+        return view(*args, **kwargs)
+    return wrapped
 
 
 @app.route("/")
@@ -28,13 +43,30 @@ def submit():
     return render_template("report.html", submitted=True)
 
 
+@app.route("/dashboard-login", methods=["GET", "POST"])
+def dashboard_login():
+    if request.method == "POST":
+        if request.form.get("password") == DASHBOARD_PASSWORD:
+            session["is_counsellor"] = True
+            return redirect(url_for("dashboard"))
+        return render_template("dashboard_login.html", error=True)
+    return render_template("dashboard_login.html", error=False)
+
+
 @app.route("/dashboard")
+@counsellor_required
 def dashboard():
     reports = get_all_reports()
     by_block, by_category = get_stats()
     return render_template(
         "dashboard.html", reports=reports, by_block=by_block, by_category=by_category
     )
+
+
+@app.route("/logout")
+def logout():
+    session.pop("is_counsellor", None)
+    return redirect(url_for("report_form"))
 
 
 @app.route("/helplines")
