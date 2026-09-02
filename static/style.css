@@ -87,3 +87,20 @@ tr.high-risk td:first-child { color: #C0392B; font-weight: bold; }
 .helpline-card h3 { margin: 0 0 6px 0; font-size: 15px; }
 .helpline-card p { margin: 2px 0; font-size: 13px; color: #444; }
 .helpline-card .phone { font-weight: bold; color: #152238; font-size: 14px; }
+
+input[type="password"], input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #DCE3EE;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+}
+.error {
+  background: #FBEAEA;
+  color: #C0392B;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
