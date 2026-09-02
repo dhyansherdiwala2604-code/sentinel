@@ -19,8 +19,7 @@ Then open http://127.0.0.1:5000 in your browser.
 - `phrases.json` — multi-word escalation phrases (e.g. "no way out") the Trie alone can't catch
 - `templates/` — the three pages (report form, dashboard, helplines)
 - `static/style.css` — styling
-- Set `DASHBOARD_PASSWORD` and `SECRET_KEY` as environment variables on Render (Settings → Environment) before your real demo — don't rely on the code defaults.
-- Fill in the real campus counselling cell number in `templates/helplines.html`.
+
   
 ## Before your demo
 
@@ -28,3 +27,5 @@ Then open http://127.0.0.1:5000 in your browser.
 - Edit `templates/helplines.html` and fill in your actual campus counselling cell contact.
 - Submit a few test reports (mix of mild/concerning/urgent language) so your dashboard isn't empty when judges look at it.
 - Everything has been tested end-to-end (form → Trie + phrase scan → risk score → SQLite → dashboard) and works out of the box.
+- Set `DASHBOARD_PASSWORD` and `SECRET_KEY` as environment variables on Render (Settings → Environment) before your real demo — don't rely on the code defaults.
+- Fill in the real campus counselling cell number in `templates/helplines.html`.
