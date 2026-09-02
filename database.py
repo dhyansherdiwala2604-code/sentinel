@@ -1,6 +1,8 @@
 import sqlite3
+from datetime import date, timedelta
 
 DB_PATH = "sentinel.db"
+HIGH_RISK_THRESHOLD = 6.0
 
 
 def get_db():
@@ -57,3 +59,58 @@ def get_stats():
     ).fetchall()
     conn.close()
     return by_block, by_category
+
+
+def get_time_slot_stats():
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT time_slot, COUNT(*) as n FROM reports GROUP BY time_slot"
+    ).fetchall()
+    conn.close()
+    return rows
+
+
+def get_summary_stats():
+    """High-level numbers for the top-of-dashboard cards."""
+    conn = get_db()
+    total = conn.execute("SELECT COUNT(*) as n FROM reports").fetchone()["n"]
+    high_risk = conn.execute(
+        "SELECT COUNT(*) as n FROM reports WHERE risk_score >= ?",
+        (HIGH_RISK_THRESHOLD,),
+    ).fetchone()["n"]
+    last_7_days = conn.execute(
+        "SELECT COUNT(*) as n FROM reports WHERE created_at >= datetime('now', '-7 days')"
+    ).fetchone()["n"]
+    avg_row = conn.execute("SELECT AVG(risk_score) as avg FROM reports").fetchone()
+    avg_score = round(avg_row["avg"], 1) if avg_row["avg"] is not None else 0.0
+    conn.close()
+    return {
+        "total": total,
+        "high_risk": high_risk,
+        "last_7_days": last_7_days,
+        "avg_score": avg_score,
+    }
+
+
+def get_daily_counts(days=14):
+    """Zero-filled day-by-day counts for the trend line — last `days` days."""
+    conn = get_db()
+    rows = conn.execute(
+        """
+        SELECT strftime('%Y-%m-%d', created_at) as day, COUNT(*) as n
+        FROM reports
+        WHERE created_at >= datetime('now', ?)
+        GROUP BY day
+        """,
+        (f"-{days} days",),
+    ).fetchall()
+    conn.close()
+
+    counts = {r["day"]: r["n"] for r in rows}
+    today = date.today()
+    labels, values = [], []
+    for i in range(days - 1, -1, -1):
+        d = today - timedelta(days=i)
+        labels.append(d.strftime("%d %b"))
+        values.append(counts.get(d.isoformat(), 0))
+    return labels, values
