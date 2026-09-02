@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request
 
 from database import init_db, insert_report, get_all_reports, get_stats
-from trie_engine import build_trie_from_json
+from trie_engine import build_trie_from_json, load_phrases, scan_phrases
 from risk_engine import compute_risk_score, dominant_category
 
 app = Flask(__name__)
 trie = build_trie_from_json()
+phrases = load_phrases()
 
 
 @app.route("/")
@@ -19,7 +20,7 @@ def submit():
     block = request.form.get("hostel_block", "unspecified")
     time_slot = request.form.get("time_slot", "unspecified")
 
-    matches = trie.scan(text)
+    matches = trie.scan(text) + scan_phrases(text, phrases)
     score, freq = compute_risk_score(matches)
     category = dominant_category(freq)
 
