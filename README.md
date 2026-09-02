@@ -19,7 +19,9 @@ Then open http://127.0.0.1:5000 in your browser.
 - `phrases.json` — multi-word escalation phrases (e.g. "no way out") the Trie alone can't catch
 - `templates/` — the three pages (report form, dashboard, helplines)
 - `static/style.css` — styling
-
+- Set `DASHBOARD_PASSWORD` and `SECRET_KEY` as environment variables on Render (Settings → Environment) before your real demo — don't rely on the code defaults.
+- Fill in the real campus counselling cell number in `templates/helplines.html`.
+  
 ## Before your demo
 
 - Keyword and phrase dictionaries expanded and reviewed for false-positive risk — done.
