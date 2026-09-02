@@ -1,0 +1,10 @@
+[
+  {"phrase": "cant stop using", "weight": 4, "category": "substance"},
+  {"phrase": "need it to function", "weight": 4, "category": "substance"},
+  {"phrase": "using again", "weight": 3, "category": "substance"},
+  {"phrase": "cant take it anymore", "weight": 5, "category": "distress"},
+  {"phrase": "no way out", "weight": 5, "category": "distress"},
+  {"phrase": "want to disappear", "weight": 5, "category": "distress"},
+  {"phrase": "better off without me", "weight": 5, "category": "distress"},
+  {"phrase": "give up on everything", "weight": 4, "category": "distress"}
+]
