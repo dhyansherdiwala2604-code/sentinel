@@ -45,3 +45,20 @@ def build_trie_from_json(path="keywords.json"):
     for entry in data:
         trie.insert(entry["word"], entry["weight"], entry["category"])
     return trie
+
+
+def load_phrases(path="phrases.json"):
+    with open(path) as f:
+        return json.load(f)
+
+
+def scan_phrases(text, phrases):
+    """Return list of (phrase, weight, category) found via substring match
+    on punctuation-stripped, lowercased text."""
+    normalized = "".join(ch if ch.isalnum() or ch.isspace() else " " for ch in text.lower())
+    normalized = " ".join(normalized.split())
+    matches = []
+    for entry in phrases:
+        if entry["phrase"] in normalized:
+            matches.append((entry["phrase"], entry["weight"], entry["category"]))
+    return matches
