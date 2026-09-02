@@ -1,59 +1,266 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>SENTINEL — Dashboard</title>
-  <link rel="stylesheet" href="/static/style.css">
+<meta charset="UTF-8">
+<title>SENTINEL — Counsellor Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --navy: #0b1e3d;
+    --navy-light: #142c56;
+    --amber: #f5a623;
+    --text: #e8ecf4;
+    --muted: #9aa7c2;
+    --danger: #e0524b;
+    --card-radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--navy);
+    color: var(--text);
+    padding: 24px;
+  }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  header h1 { font-size: 22px; margin: 0; }
+  header h1 span { color: var(--amber); }
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    margin-left: 18px;
+    font-size: 14px;
+  }
+  nav a:hover { color: var(--amber); }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .card {
+    background: var(--navy-light);
+    border-radius: var(--card-radius);
+    padding: 18px 20px;
+    border: 1px solid rgba(245,166,35,0.15);
+  }
+  .card .value { font-size: 30px; font-weight: 700; color: var(--amber); }
+  .card.high-risk .value { color: var(--danger); }
+  .card .label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  .charts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+  .chart-box {
+    background: var(--navy-light);
+    border-radius: var(--card-radius);
+    padding: 18px;
+    border: 1px solid rgba(245,166,35,0.1);
+  }
+  .chart-box h3 { margin: 0 0 12px; font-size: 15px; color: var(--muted); font-weight: 600; }
+  .chart-box canvas { max-height: 260px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--navy-light);
+    border-radius: var(--card-radius);
+    overflow: hidden;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  th {
+    color: var(--muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+  tr:last-child td { border-bottom: none; }
+  .risk-pill {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .risk-high { background: rgba(224,82,75,0.18); color: var(--danger); }
+  .risk-mid { background: rgba(245,166,35,0.18); color: var(--amber); }
+  .risk-low { background: rgba(154,167,194,0.18); color: var(--muted); }
+
+  .empty-state { text-align: center; padding: 40px; color: var(--muted); }
+</style>
 </head>
 <body>
-  <div class="wrap wide">
-    <div class="brand">🛡 SENTINEL</div>
-    <h1>Counsellor Dashboard</h1>
-    <p class="muted">Aggregate view only — no identity is ever linked to a report.</p>
 
-    <div class="stats-row">
-      <div class="stat-card">
-        <h3>Reports by hostel</h3>
-        {% for row in by_block %}
-          <div class="bar-row">
-            <span class="bar-label">{{ row["hostel_block"] }}</span>
-            <div class="bar" style="width: {{ (row['n'] * 24) }}px;"></div>
-            <span class="bar-count">{{ row["n"] }}</span>
-          </div>
-        {% endfor %}
-      </div>
-      <div class="stat-card">
-        <h3>Reports by category</h3>
-        {% for row in by_category %}
-          <div class="bar-row">
-            <span class="bar-label">{{ row["category"] }}</span>
-            <div class="bar accent" style="width: {{ (row['n'] * 24) }}px;"></div>
-            <span class="bar-count">{{ row["n"] }}</span>
-          </div>
-        {% endfor %}
-      </div>
-    </div>
+<header>
+  <h1>🛡 SENTINEL <span>— Counsellor Dashboard</span></h1>
+  <nav>
+    <a href="{{ url_for('helplines') }}">Helplines</a>
+    <a href="{{ url_for('report_form') }}">Report form</a>
+    <a href="{{ url_for('logout') }}">Log out</a>
+  </nav>
+</header>
 
-    <table>
-      <tr>
-        <th>Risk Score</th>
-        <th>Category</th>
-        <th>Hostel</th>
-        <th>Time</th>
-        <th>Submitted</th>
-      </tr>
-      {% for r in reports %}
-      <tr class="{{ 'high-risk' if r['risk_score'] >= 6 else '' }}">
-        <td>{{ r["risk_score"] }}</td>
-        <td>{{ r["category"] }}</td>
-        <td>{{ r["hostel_block"] }}</td>
-        <td>{{ r["time_slot"] }}</td>
-        <td>{{ r["created_at"] }}</td>
-      </tr>
-      {% endfor %}
-    </table>
-
-    <a class="link" href="/">← Back to report form</a>
-    <a class="link" href="/logout">Log out</a>
+<section class="cards">
+  <div class="card">
+    <div class="value">{{ summary.total }}</div>
+    <div class="label">Total reports</div>
   </div>
+  <div class="card high-risk">
+    <div class="value">{{ summary.high_risk }}</div>
+    <div class="label">High-risk reports (score ≥ 6)</div>
+  </div>
+  <div class="card">
+    <div class="value">{{ summary.last_7_days }}</div>
+    <div class="label">Reports — last 7 days</div>
+  </div>
+  <div class="card">
+    <div class="value">{{ summary.avg_score }}</div>
+    <div class="label">Average risk score</div>
+  </div>
+</section>
+
+<section class="charts">
+  <div class="chart-box">
+    <h3>Reports over time (last 14 days)</h3>
+    <canvas id="trendChart"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>By category</h3>
+    <canvas id="categoryChart"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>By hostel block</h3>
+    <canvas id="blockChart"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>By time of day</h3>
+    <canvas id="timeSlotChart"></canvas>
+  </div>
+</section>
+
+{% if reports %}
+<table>
+  <thead>
+    <tr>
+      <th>Risk</th>
+      <th>Category</th>
+      <th>Hostel block</th>
+      <th>Time of day</th>
+      <th>Reported</th>
+      <th>Concern</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in reports %}
+    <tr>
+      <td>
+        <span class="risk-pill {{ 'risk-high' if r['risk_score'] >= 6 else ('risk-mid' if r['risk_score'] >= 3 else 'risk-low') }}">
+          {{ '%.1f'|format(r['risk_score']) }}
+        </span>
+      </td>
+      <td>{{ r['category'] }}</td>
+      <td>{{ r['hostel_block'] }}</td>
+      <td>{{ r['time_slot'] }}</td>
+      <td>{{ r['created_at'] }}</td>
+      <td>{{ r['text'] }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty-state">No reports yet. Submit a test report from the form to see it appear here.</div>
+{% endif %}
+
+<script>
+  Chart.defaults.color = '#9aa7c2';
+  Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+
+  new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+      labels: {{ daily_labels|tojson }},
+      datasets: [{
+        label: 'Reports',
+        data: {{ daily_values|tojson }},
+        borderColor: '#f5a623',
+        backgroundColor: 'rgba(245,166,35,0.15)',
+        tension: 0.3,
+        fill: true,
+        pointRadius: 3,
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+  });
+
+  new Chart(document.getElementById('categoryChart'), {
+    type: 'doughnut',
+    data: {
+      labels: {{ category_labels|tojson }},
+      datasets: [{
+        data: {{ category_values|tojson }},
+        backgroundColor: ['#f5a623', '#e0524b', '#4a9eda', '#6c757d'],
+        borderColor: '#0b1e3d',
+        borderWidth: 2,
+      }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } } }
+  });
+
+  new Chart(document.getElementById('blockChart'), {
+    type: 'bar',
+    data: {
+      labels: {{ block_labels|tojson }},
+      datasets: [{
+        label: 'Reports',
+        data: {{ block_values|tojson }},
+        backgroundColor: '#4a9eda',
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+  });
+
+  new Chart(document.getElementById('timeSlotChart'), {
+    type: 'bar',
+    data: {
+      labels: {{ time_slot_labels|tojson }},
+      datasets: [{
+        label: 'Reports',
+        data: {{ time_slot_values|tojson }},
+        backgroundColor: '#f5a623',
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+  });
+</script>
+
 </body>
 </html>
