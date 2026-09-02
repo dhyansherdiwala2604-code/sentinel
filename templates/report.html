@@ -8,21 +8,24 @@
   <div class="wrap">
     <div class="brand">🛡 SENTINEL</div>
     <h1>Share a concern — completely anonymous</h1>
-
     <ul class="assurance">
       <li>No login required</li>
       <li>No name collected</li>
       <li>No IP address stored</li>
     </ul>
-
     {% if submitted %}
       <div class="confirm">Thank you. Your report has been received and will be reviewed.</div>
     {% endif %}
-
+    {% if throttled %}
+      <div class="error">You've already submitted recently. Please wait about {{ wait_left // 60 }} more minute(s) before trying again.</div>
+    {% endif %}
     <form action="/submit" method="post">
+      <div style="position:absolute; left:-9999px; top:-9999px;" aria-hidden="true">
+        <label for="website">Leave this field empty</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+      </div>
       <label>What have you noticed?</label>
       <textarea name="concern" rows="5" placeholder="Describe what you've noticed, as much or as little as you're comfortable sharing..." required></textarea>
-
       <div class="row">
         <div>
           <label>Hostel block (optional)</label>
@@ -46,10 +49,8 @@
           </select>
         </div>
       </div>
-
       <button type="submit">Submit anonymously</button>
     </form>
-
     <a class="link" href="/helplines">Need help right now? See helplines →</a>
     <a class="link" href="/dashboard-login">Counsellor login →</a>
   </div>
